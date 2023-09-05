@@ -12,5 +12,6 @@ namespace greenharvestbox.Logic.Services.UserServices.LoginService
     public interface ILoginService
     {
         public Response<UserBasicDto> Register(UserRegisterDto userRegisterDto);
+        public Response<UserBasicDto> Login(UserLoginDto userLoginDto);
     }
 }

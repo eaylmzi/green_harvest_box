@@ -39,5 +39,23 @@ namespace GreenHarvestBoxAPI.Controllers
             }
             
         }
+        [HttpPost]
+        public ActionResult<Response<UserBasicDto>> Login([FromBody] UserLoginDto userLoginDto)
+        {
+            try
+            {
+                return Ok(_loginService.Login(userLoginDto));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response<UserBasicDto>
+                {
+                    Message = ExceptionInformation(ex.Message, ex.StackTrace),
+                    Data = new UserBasicDto(),
+                    Progress = false
+                });
+            }
+
+        }
     }
 }

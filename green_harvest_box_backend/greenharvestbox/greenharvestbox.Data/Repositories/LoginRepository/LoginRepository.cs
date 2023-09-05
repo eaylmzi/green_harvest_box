@@ -68,5 +68,62 @@ namespace greenharvestbox.Data.Repositories.LoginRepository
                 return null;
             }
         }
+        public User? FindUserByEmailAndPassword(string email, byte[] passwordHash, byte[] passwordSalt)
+        {
+            var procedureName = "User_FindUserByEmailAndPassword";
+            DynamicParameters parameters = new DynamicParameters();
+
+            // Parametreleri DynamicParameters nesnesine ekleyebilirsiniz.
+            parameters.Add("@Email", email, DbType.String);
+            parameters.Add("@PasswordHash", passwordHash, DbType.Binary);
+            parameters.Add("@PasswordSalt", passwordSalt, DbType.Binary);
+
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                User user = connection.QuerySingleOrDefault<User>(procedureName, parameters, commandType: CommandType.StoredProcedure);
+                if (user != null)
+                {
+                    return user;
+                }
+                return null;
+            }
+        }
+        public User? FindUserByEmail(string email)
+        {
+            var procedureName = "User_FindUserByEmail";
+            DynamicParameters parameters = new DynamicParameters();
+
+            // Parametreleri DynamicParameters nesnesine ekleyebilirsiniz.
+            parameters.Add("@Email", email, DbType.String);
+
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                User user = connection.QuerySingleOrDefault<User>(procedureName, parameters, commandType: CommandType.StoredProcedure);
+                if (user != null)
+                {
+                    return user;
+                }
+                return null;
+            }
+        }
+        public bool IsUserExists(string email)
+        {
+            var procedureName = "User_IsUserExists";
+            DynamicParameters parameters = new DynamicParameters();
+
+            // Parametreleri DynamicParameters nesnesine ekleyebilirsiniz.
+            parameters.Add("@Email", email, DbType.String);
+
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                string userEmail = connection.QuerySingleOrDefault<string>(procedureName, parameters, commandType: CommandType.StoredProcedure);
+                if (userEmail != null)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
     }
 }

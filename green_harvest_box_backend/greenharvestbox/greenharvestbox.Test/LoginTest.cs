@@ -57,6 +57,7 @@ namespace greenharvestbox.Test
             //ARRANGE
             string token = "test_token";
             string password = "123456";
+            string email = "emreyilmaz@hotmail.com";
             _cipherService.CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
             byte[] passHash = passwordHash;
             byte[] passSalt = passwordSalt;
@@ -65,7 +66,7 @@ namespace greenharvestbox.Test
             {
                 Name = "emre",
                 Surname = "yýlmaz",
-                Email = "emreyilmaz@hotmail.com",
+                Email = email,
                 PhoneNumber = "5412147452",
                 Password = password,
                 City = "izmir",
@@ -79,6 +80,7 @@ namespace greenharvestbox.Test
             user.PasswordSalt = passSalt;
             user.Token = token;
 
+            _loginRepositoryMock.Setup(x => x.IsUserExists(It.IsAny<string>())).Returns(false);
             _jwtServiceMock.Setup(x => x.CreateToken(Roles.CUSTOMER)).Returns(token);
             _cipherServiceMock.Setup(x => x.CreatePasswordHash(It.IsAny<string>(), out It.Ref<byte[]>.IsAny, out It.Ref<byte[]>.IsAny))
              .Callback((string password, out byte[] passwordHash, out byte[] passwordSalt) =>
@@ -114,6 +116,7 @@ namespace greenharvestbox.Test
             //ARRANGE
             string token = "test_token";
             string password = "123456";
+            string email = "emreyilmaz@hotmail.com";
             _cipherService.CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
             byte[] passHash = passwordHash;
             byte[] passSalt = passwordSalt;
@@ -122,7 +125,7 @@ namespace greenharvestbox.Test
             {
                 Name = "emre",
                 Surname = "yýlmaz",
-                Email = "emreyilmaz@hotmail.com",
+                Email = email,
                 PhoneNumber = "5412147452",
                 Password = password,
                 City = "izmir",
@@ -138,7 +141,7 @@ namespace greenharvestbox.Test
             user.Token = token;
 
             User nullUser = null;
-
+            _loginRepositoryMock.Setup(x => x.IsUserExists(It.IsAny<string>())).Returns(false);
             _jwtServiceMock.Setup(x => x.CreateToken(Roles.CUSTOMER)).Returns(token);
             _cipherServiceMock.Setup(x => x.CreatePasswordHash(It.IsAny<string>(), out It.Ref<byte[]>.IsAny, out It.Ref<byte[]>.IsAny))
                .Callback((string password, out byte[] passwordHash, out byte[] passwordSalt) =>
@@ -147,6 +150,7 @@ namespace greenharvestbox.Test
                    passwordSalt = passSalt;
                });           
             _loginRepositoryMock.Setup(x => x.AddUser(It.IsAny<User>())).Returns(nullUser);
+            
 
             //ACT
             Response<UserBasicDto> response = _loginService.Register(userRegisterDto);
@@ -162,6 +166,7 @@ namespace greenharvestbox.Test
             //ARRANGE
             string? token = null;
             string password = "123456";
+            string email = "emreyilmaz@hotmail.com";
             _cipherService.CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
             byte[] passHash = passwordHash;
             byte[] passSalt = passwordSalt;
@@ -170,7 +175,7 @@ namespace greenharvestbox.Test
             {
                 Name = "emre",
                 Surname = "yýlmaz",
-                Email = "emreyilmaz@hotmail.com",
+                Email = email,
                 PhoneNumber = "5412147452",
                 Password = password,
                 City = "izmir",
@@ -178,7 +183,7 @@ namespace greenharvestbox.Test
                 IsCompanyWorker = false
             };
 
-
+            _loginRepositoryMock.Setup(x => x.IsUserExists(It.IsAny<string>())).Returns(false);
             _jwtServiceMock.Setup(x => x.CreateToken(Roles.CUSTOMER)).Returns(token);
             _cipherServiceMock.Setup(x => x.CreatePasswordHash(It.IsAny<string>(), out It.Ref<byte[]>.IsAny, out It.Ref<byte[]>.IsAny))
              .Callback((string password, out byte[] passwordHash, out byte[] passwordSalt) =>
@@ -186,6 +191,7 @@ namespace greenharvestbox.Test
                  passwordHash = passHash;
                  passwordSalt = passSalt;
              });
+            
             //ACT
             Response<UserBasicDto> response = _loginService.Register(userRegisterDto);
             //ASSERT
@@ -199,6 +205,7 @@ namespace greenharvestbox.Test
         {
             //ARRANGE
             string password = "";
+            string email = "emreyilmaz@hotmail.com";
             _cipherService.CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
             byte[] passHash = passwordHash;
             byte[] passSalt = passwordSalt;
@@ -207,26 +214,56 @@ namespace greenharvestbox.Test
             {
                 Name = "emre",
                 Surname = "yýlmaz",
-                Email = "emreyilmaz@hotmail.com",
+                Email = email,
                 PhoneNumber = "5412147452",
                 Password = password,
                 City = "izmir",
                 Province = "bornova",
                 IsCompanyWorker = false
             };
-
+            _loginRepositoryMock.Setup(x => x.IsUserExists(It.IsAny<string>())).Returns(false);
             _cipherServiceMock.Setup(x => x.CreatePasswordHash(It.IsAny<string>(), out It.Ref<byte[]>.IsAny, out It.Ref<byte[]>.IsAny))
                 .Callback((string password, out byte[] passwordHash, out byte[] passwordSalt) =>
                 {
                     passwordHash = null; 
                     passwordSalt = null; 
                 });
-
+            
             //ACT
             Response<UserBasicDto> response = _loginService.Register(userRegisterDto);
 
             //ASSERT
             Assert.Equal(_utilityService.CombineStrings(Error.PASSWORD_NOT_ENCRYPTED, Error.USER_NOT_ADDED), response.Message);
+            Assert.True(response.Data.Id == 0);
+            Assert.False(response.Progress);
+
+        }
+        [Fact]
+        public void Register_ShouldReturnErrorResponse_WhenEmailExists()
+        {
+            //ARRANGE
+
+            string password = "123456";
+            string email = "emreyilmaz@hotmail.com";
+
+            UserRegisterDto userRegisterDto = new UserRegisterDto()
+            {
+                Name = "emre",
+                Surname = "yýlmaz",
+                Email = email,
+                PhoneNumber = "5412147452",
+                Password = password,
+                City = "izmir",
+                Province = "bornova",
+                IsCompanyWorker = false
+            };
+            _loginRepositoryMock.Setup(x => x.IsUserExists(It.IsAny<string>())).Returns(true);
+
+            //ACT
+            Response<UserBasicDto> response = _loginService.Register(userRegisterDto);
+
+            //ASSERT
+            Assert.Equal(_utilityService.CombineStrings(Error.USER_ALREADY_ADDED, Error.USER_NOT_ADDED), response.Message);
             Assert.True(response.Data.Id == 0);
             Assert.False(response.Progress);
 

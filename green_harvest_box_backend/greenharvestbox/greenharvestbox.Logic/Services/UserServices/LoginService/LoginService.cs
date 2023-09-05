@@ -69,7 +69,17 @@ namespace greenharvestbox.Logic.Services.UserServices.LoginService
         public Response<UserBasicDto> Register(UserRegisterDto userRegisterDto)
         {
             _logger.LogInformation("Register function is launched...");
-
+            bool isUserExist = _loginRepository.IsUserExists(userRegisterDto.Email);
+            if (isUserExist)
+            {
+                _logger.LogError(_utilityService.CombineStrings(Error.USER_ALREADY_ADDED, Error.PROCESS_FAILED));
+                return new Response<UserBasicDto>
+                {
+                    Message = _utilityService.CombineStrings(Error.USER_ALREADY_ADDED, Error.USER_NOT_ADDED),
+                    Data = new UserBasicDto(),
+                    Progress = false
+                };
+            }
             // Fill the user entity with necessary information
             User user = Map<User>(userRegisterDto);
 
@@ -125,6 +135,42 @@ namespace greenharvestbox.Logic.Services.UserServices.LoginService
                 Progress = true 
             };
         }
+        //To login and use the system.
+        public Response<UserBasicDto> Login(UserLoginDto userLoginDto)
+        {
+            _logger.LogInformation("Login function is launched...");
+            User? user = _loginRepository.FindUserByEmail(userLoginDto.Email);    
+            if(user == null)
+            {
+                _logger.LogInformation("Credentials not matched");
+                return new Response<UserBasicDto>
+                {
+                    Message = Error.USER_NOT_FOUND,
+                    Data = new UserBasicDto(),
+                    Progress = false
+                };
+            }
+            bool isLogin = _cipherService.VerifyPasswordHash(user.PasswordHash, user.PasswordSalt, userLoginDto.Password);
+            if (!isLogin)
+            {
+                _logger.LogInformation("Credentials not matched");
+                return new Response<UserBasicDto>
+                {
+                    Message = Error.USER_NOT_FOUND,
+                    Data = new UserBasicDto(),
+                    Progress = false
+                };
+            }
 
+            UserBasicDto userBasicDto = Map<UserBasicDto>(user);
+            _logger.LogInformation("Login function is finished");
+            return new Response<UserBasicDto>
+            {
+                Message = Success.USER_LOGIN,
+                Data = userBasicDto,
+                Progress = true
+            };
+
+        }
     }
 }
