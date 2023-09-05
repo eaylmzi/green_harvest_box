@@ -1,5 +1,7 @@
 ﻿using greenharvestbox.Data.Models;
 using greenharvestbox.Data.Repositories.UserRepository;
+using greenharvestbox.Logic.Models.dto;
+using greenharvestbox.Logic.Models.dto.Login.dto;
 using greenharvestbox.Logic.Services.UserServices.LoginService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,11 +19,25 @@ namespace GreenHarvestBoxAPI.Controllers
         {
             _loginService = loginService;
         }
+        private string ExceptionInformation(string message, string stacktrace)
+        {
+            return "Exception message : " + message  + "Exception Stack Trace : " + stacktrace;
+        }
 
         [HttpPost]
-        public ActionResult<User> Register(string name)
+        public ActionResult<Response<UserBasicDto>> Register([FromBody]UserRegisterDto userRegisterDto)
         {
-            return Ok();
+            try
+            {
+                return Ok(_loginService.Register(userRegisterDto));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new Response<UserBasicDto> { Message = ExceptionInformation(ex.Message, ex.StackTrace),
+                                                               Data = new UserBasicDto(),
+                                                               Progress = false});
+            }
+            
         }
     }
 }

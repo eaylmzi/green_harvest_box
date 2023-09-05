@@ -12,6 +12,7 @@ namespace greenharvestbox.Data.Repositories.UserRepository
 {
     public class UserRepository : IUserRepository
     {
+        private readonly string MYSQL = "Server=.\\SQLSERVER;Database=GreenHarvestBoxDB;Trusted_Connection=True;";
         public User? AddCategory(Category category)
         {
             var procedureName = "Category_AddCategory"; 
