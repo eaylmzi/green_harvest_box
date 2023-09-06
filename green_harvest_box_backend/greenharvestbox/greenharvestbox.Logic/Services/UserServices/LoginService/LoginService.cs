@@ -73,13 +73,9 @@ namespace greenharvestbox.Logic.Services.UserServices.LoginService
             if (isUserExist)
             {
                 _logger.LogError(_utilityService.CombineStrings(Error.USER_ALREADY_ADDED, Error.PROCESS_FAILED));
-                return new Response<UserBasicDto>
-                {
-                    Message = _utilityService.CombineStrings(Error.USER_ALREADY_ADDED, Error.USER_NOT_ADDED),
-                    Data = new UserBasicDto(),
-                    Progress = false
-                };
+                return _utilityService.CreateResponseMessage(_utilityService.CombineStrings(Error.USER_ALREADY_ADDED, Error.USER_NOT_ADDED), new UserBasicDto(), false);
             }
+
             // Fill the user entity with necessary information
             User user = Map<User>(userRegisterDto);
 
@@ -87,12 +83,7 @@ namespace greenharvestbox.Logic.Services.UserServices.LoginService
             if(user.PasswordHash == null && user.PasswordSalt == null)
             {
                 _logger.LogError(_utilityService.CombineStrings(Error.PASSWORD_NOT_ENCRYPTED,Error.PROCESS_FAILED));
-                return new Response<UserBasicDto>
-                { 
-                    Message = _utilityService.CombineStrings(Error.PASSWORD_NOT_ENCRYPTED, Error.USER_NOT_ADDED), 
-                    Data = new UserBasicDto(), 
-                    Progress = false 
-                };
+                return _utilityService.CreateResponseMessage(_utilityService.CombineStrings(Error.PASSWORD_NOT_ENCRYPTED, Error.USER_NOT_ADDED), new UserBasicDto(), false);
             }
             _logger.LogInformation(Success.PASSWORD_ENCRYPTED);
 
@@ -100,12 +91,7 @@ namespace greenharvestbox.Logic.Services.UserServices.LoginService
             if (user.Token == null)
             {
                 _logger.LogError(_utilityService.CombineStrings(Error.TOKEN_NOT_CREATED, Error.PROCESS_FAILED));
-                return new Response<UserBasicDto> 
-                { 
-                    Message = _utilityService.CombineStrings(Error.TOKEN_NOT_CREATED, Error.USER_NOT_ADDED), 
-                    Data = new UserBasicDto(), 
-                    Progress = false 
-                };
+                return _utilityService.CreateResponseMessage(_utilityService.CombineStrings(Error.TOKEN_NOT_CREATED, Error.USER_NOT_ADDED), new UserBasicDto(), false);
             }
             _logger.LogInformation(Success.TOKEN_CREATED);
 
@@ -115,12 +101,7 @@ namespace greenharvestbox.Logic.Services.UserServices.LoginService
             if (addedUser == null)
             {
                 _logger.LogInformation(Error.USER_NOT_ADDED);
-                return new Response<UserBasicDto> 
-                { 
-                    Message = Error.USER_NOT_ADDED, 
-                    Data = new UserBasicDto(), 
-                    Progress = false 
-                };
+                return _utilityService.CreateResponseMessage(Error.USER_NOT_ADDED, new UserBasicDto(), false);
             }
             
             // Map user information to UserBasic because we need to simple information on front side to decrease request number
@@ -128,12 +109,7 @@ namespace greenharvestbox.Logic.Services.UserServices.LoginService
 
             _logger.LogInformation(Success.USER_ADDED);
             _logger.LogInformation("Register function is finished");
-            return new Response<UserBasicDto> 
-            { 
-                Message = Success.USER_ADDED, 
-                Data = userBasicDto, 
-                Progress = true 
-            };
+            return _utilityService.CreateResponseMessage(Success.USER_ADDED, userBasicDto, true);
         }
         //To login and use the system.
         public Response<UserBasicDto> Login(UserLoginDto userLoginDto)
@@ -143,33 +119,19 @@ namespace greenharvestbox.Logic.Services.UserServices.LoginService
             if(user == null)
             {
                 _logger.LogInformation("Credentials not matched");
-                return new Response<UserBasicDto>
-                {
-                    Message = Error.USER_NOT_FOUND,
-                    Data = new UserBasicDto(),
-                    Progress = false
-                };
+                return _utilityService.CreateResponseMessage(Error.USER_NOT_FOUND, new UserBasicDto(), false);
             }
             bool isLogin = _cipherService.VerifyPasswordHash(user.PasswordHash, user.PasswordSalt, userLoginDto.Password);
             if (!isLogin)
             {
                 _logger.LogInformation("Credentials not matched");
-                return new Response<UserBasicDto>
-                {
-                    Message = Error.USER_NOT_FOUND,
-                    Data = new UserBasicDto(),
-                    Progress = false
-                };
+                return _utilityService.CreateResponseMessage(Error.USER_NOT_FOUND, new UserBasicDto(), false);
             }
+            _logger.LogInformation("Credentials are verified");
 
             UserBasicDto userBasicDto = Map<UserBasicDto>(user);
             _logger.LogInformation("Login function is finished");
-            return new Response<UserBasicDto>
-            {
-                Message = Success.USER_LOGIN,
-                Data = userBasicDto,
-                Progress = true
-            };
+            return _utilityService.CreateResponseMessage(Success.USER_LOGIN, userBasicDto, true);
 
         }
     }

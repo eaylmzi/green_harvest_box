@@ -268,6 +268,121 @@ namespace greenharvestbox.Test
             Assert.False(response.Progress);
 
         }
+        [Fact]
+        public void Login_ShouldReturnSuccessResponse_WhenParametersAreValid()
+        {
+            //ARRANGE
+            
+            UserLoginDto userLoginDto = new UserLoginDto()
+            {
+                Email = "testemail@hotmail.com",
+                Password = "123456"
+            };
+            User user = new User()
+            {
+                Id = 1,
+                Name = "emre",
+                Surname = "yýlmaz",
+                Email = userLoginDto.Email,
+                PhoneNumber = "5412147452",
+                PasswordHash = new byte[] { 0x48, 0x65, 0x6C, 0x6C, 0x6F },
+                PasswordSalt = new byte[] { 0x48, 0x65, 0x6C, 0x6C, 0x6F },
+                City = "izmir",
+                Province = "bornova",
+                Address = null,
+                RegisteredAt = new DateTime(2023, 9, 1),
+                Token = "test_token"
+            };
 
+   
+            _loginRepositoryMock.Setup(x => x.FindUserByEmail(It.IsAny<string>())).Returns(user);
+            _cipherServiceMock.Setup(x => x.VerifyPasswordHash(It.IsAny<byte[]>(), It.IsAny<byte[]>(), It.IsAny<string>()))
+                .Returns(true);
+
+
+            //ACT
+            Response<UserBasicDto> response = _loginService.Login(userLoginDto);
+
+            //ASSERT
+
+            Assert.Equal(Success.USER_LOGIN, response.Message);
+            Assert.NotNull(response.Data);
+            Assert.True(response.Progress);
+
+            Assert.Equal(user.Id, response.Data.Id);
+            Assert.Equal(user.Name, response.Data.Name);
+            Assert.Equal(user.Surname, response.Data.Surname);
+            Assert.Equal(user.Email, response.Data.Email);
+            Assert.Equal(user.PhoneNumber, response.Data.PhoneNumber);
+            Assert.Equal(user.Address, response.Data.Address);
+            Assert.Equal(user.City, response.Data.City);
+            Assert.Equal(user.Province, response.Data.Province);
+            Assert.Equal(user.Token, response.Data.Token);
+        }
+        [Fact]
+        public void Login_ShouldReturnErrorResponse_WhenUserNotFound()
+        {
+            //ARRANGE
+
+            UserLoginDto userLoginDto = new UserLoginDto()
+            {
+                Email = "testemail@hotmail.com",
+                Password = "123456"
+            };
+            User? nullUser = null;
+
+            _loginRepositoryMock.Setup(x => x.FindUserByEmail(It.IsAny<string>())).Returns(nullUser);
+   
+
+
+            //ACT
+            Response<UserBasicDto> response = _loginService.Login(userLoginDto);
+
+            //ASSERT
+
+            Assert.Equal(Error.USER_NOT_FOUND, response.Message);
+            Assert.True(response.Data.Id == 0);
+            Assert.False(response.Progress);
+        }
+        [Fact]
+        public void Login_ShouldReturnErrorResponse_WhenPasswordNotMatched()
+        {
+            //ARRANGE
+
+            UserLoginDto userLoginDto = new UserLoginDto()
+            {
+                Email = "testemail@hotmail.com",
+                Password = "123456"
+            };
+            User user = new User()
+            {
+                Id = 1,
+                Name = "emre",
+                Surname = "yýlmaz",
+                Email = userLoginDto.Email,
+                PhoneNumber = "5412147452",
+                PasswordHash = new byte[] { 0x48, 0x65, 0x6C, 0x6C, 0x6F },
+                PasswordSalt = new byte[] { 0x48, 0x65, 0x6C, 0x6C, 0x6F },
+                City = "izmir",
+                Province = "bornova",
+                Address = null,
+                RegisteredAt = new DateTime(2023, 9, 1),
+                Token = "test_token"
+            };
+
+
+            _loginRepositoryMock.Setup(x => x.FindUserByEmail(It.IsAny<string>())).Returns(user);
+            _cipherServiceMock.Setup(x => x.VerifyPasswordHash(It.IsAny<byte[]>(), It.IsAny<byte[]>(), It.IsAny<string>()))
+                .Returns(false);
+
+            //ACT
+            Response<UserBasicDto> response = _loginService.Login(userLoginDto);
+
+            //ASSERT
+
+            Assert.Equal(Error.USER_NOT_FOUND, response.Message);
+            Assert.True(response.Data.Id == 0);
+            Assert.False(response.Progress);
+        }
     }
 }

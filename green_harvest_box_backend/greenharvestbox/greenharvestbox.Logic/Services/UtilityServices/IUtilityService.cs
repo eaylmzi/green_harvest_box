@@ -1,4 +1,5 @@
-﻿using System;
+﻿using greenharvestbox.Logic.Models.dto;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,5 +10,6 @@ namespace greenharvestbox.Logic.Services.UtilityServices
     public interface IUtilityService
     {
         public string CombineStrings(string firstString, string secondString);
+        public Response<T> CreateResponseMessage<T>(string errorMessage, T data, bool progress);
     }
 }
