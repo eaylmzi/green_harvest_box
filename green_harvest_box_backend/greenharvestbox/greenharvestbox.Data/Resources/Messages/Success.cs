@@ -12,5 +12,8 @@ namespace greenharvestbox.Data.Resources.Messages
         public const string USER_LOGIN = "User login successfully";
         public const string PASSWORD_ENCRYPTED = "Password is encrypted successfully";
         public const string TOKEN_CREATED = "Token is created successfully";
+
+        //Food
+        public const string FOOD_LIST_BROUGHT = "Food list brought successfully";
     }
 }

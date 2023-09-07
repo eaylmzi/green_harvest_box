@@ -15,5 +15,8 @@ namespace greenharvestbox.Data.Resources.Messages
         public const string PASSWORD_NOT_ENCRYPTED = "Password not encrypted";
         public const string PROCESS_FAILED = "Process is failed...";
         public const string TOKEN_NOT_CREATED = "User token not created";
+
+        //Food
+        public const string FOOD_LIST_EMPTY = "Food list is empty";
     }
 }

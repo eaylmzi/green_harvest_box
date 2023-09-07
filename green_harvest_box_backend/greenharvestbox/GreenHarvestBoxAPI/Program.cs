@@ -1,8 +1,10 @@
 
+using greenharvestbox.Data.Repositories.FoodRepository;
 using greenharvestbox.Data.Repositories.LoginRepository;
 using greenharvestbox.Data.Repositories.UserRepository;
 using greenharvestbox.Data.Services.ConfigurationServices;
 using greenharvestbox.Logic.Services.Cipher;
+using greenharvestbox.Logic.Services.FoodServices;
 using greenharvestbox.Logic.Services.Jwt;
 using greenharvestbox.Logic.Services.UserServices.LoginService;
 using greenharvestbox.Logic.Services.UtilityServices;
@@ -12,6 +14,7 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
 
@@ -41,6 +44,8 @@ builder.Services.AddScoped<ICipherService, CipherService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IUtilityService, UtilityService>();
 
+builder.Services.AddScoped<IFoodRepository, FoodRepository>();
+builder.Services.AddScoped<IFoodService, FoodService>();
 
 builder.Services.AddScoped<ILoginRepository, LoginRepository>();
 builder.Services.AddScoped<ILoginService, LoginService>();
@@ -48,6 +53,7 @@ builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+ConfigurationService _configurationService = new ConfigurationService();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -55,7 +61,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
-                .GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value ?? throw new ArgumentNullException())),
+                .GetBytes(_configurationService.GetMySecretKey())),
             ValidateIssuer = false,
             ValidateAudience = false
         };
@@ -64,7 +70,7 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
     {
-        Description = "Standard Authorization header using the Bearer scheme(\"bearer{token}\")",
+        Description = "Standard Authorization header using the Bearer scheme(\"Bearer{token}\")",
         In = ParameterLocation.Header,
         Name = "Authorization",
         Type = SecuritySchemeType.ApiKey
@@ -85,7 +91,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

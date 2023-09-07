@@ -11,5 +11,7 @@ namespace greenharvestbox.Logic.Services.UtilityServices
     {
         public string CombineStrings(string firstString, string secondString);
         public Response<T> CreateResponseMessage<T>(string errorMessage, T data, bool progress);
+        public string ExceptionInformation(string message, string stacktrace);
+
     }
 }

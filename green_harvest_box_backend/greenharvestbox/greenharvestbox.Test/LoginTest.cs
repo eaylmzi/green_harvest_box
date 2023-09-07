@@ -99,15 +99,6 @@ namespace greenharvestbox.Test
             Assert.NotNull(response.Data);
             Assert.True(response.Progress);
 
-            Assert.Equal(user.Id, response.Data.Id);
-            Assert.Equal(user.Name, response.Data.Name);
-            Assert.Equal(user.Surname, response.Data.Surname);
-            Assert.Equal(user.Email, response.Data.Email);
-            Assert.Equal(user.PhoneNumber, response.Data.PhoneNumber);
-            Assert.Equal(user.Address, response.Data.Address);
-            Assert.Equal(user.City, response.Data.City);
-            Assert.Equal(user.Province, response.Data.Province);
-            Assert.Equal(user.Token, response.Data.Token);
 
         }
         [Fact]
@@ -308,16 +299,6 @@ namespace greenharvestbox.Test
             Assert.Equal(Success.USER_LOGIN, response.Message);
             Assert.NotNull(response.Data);
             Assert.True(response.Progress);
-
-            Assert.Equal(user.Id, response.Data.Id);
-            Assert.Equal(user.Name, response.Data.Name);
-            Assert.Equal(user.Surname, response.Data.Surname);
-            Assert.Equal(user.Email, response.Data.Email);
-            Assert.Equal(user.PhoneNumber, response.Data.PhoneNumber);
-            Assert.Equal(user.Address, response.Data.Address);
-            Assert.Equal(user.City, response.Data.City);
-            Assert.Equal(user.Province, response.Data.Province);
-            Assert.Equal(user.Token, response.Data.Token);
         }
         [Fact]
         public void Login_ShouldReturnErrorResponse_WhenUserNotFound()

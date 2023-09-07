@@ -24,5 +24,9 @@ namespace greenharvestbox.Logic.Services.UtilityServices
                 Progress = progress
             };
         }
+        public string ExceptionInformation(string message, string stacktrace)
+        {
+            return "Exception message : " + message + "Exception Stack Trace : " + stacktrace;
+        }
     }
 }
