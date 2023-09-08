@@ -10,5 +10,6 @@ namespace greenharvestbox.Data.Repositories.FoodRepository
     public interface IFoodRepository
     {
         public List<FoodOverviewDto> GetRandomFood(int companyId, int amountOfFoodToBrought);
+        public List<FoodOverviewDto> GetFoodByDiscountRate(int companyId, int amountOfFoodToBrought);
     }
 }

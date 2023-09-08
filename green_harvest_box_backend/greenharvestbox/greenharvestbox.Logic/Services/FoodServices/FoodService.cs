@@ -31,6 +31,15 @@ namespace greenharvestbox.Logic.Services.FoodServices
             }
             return _utilityService.CreateResponseMessage(Success.FOOD_LIST_BROUGHT, foodOverviewList, true);
         }
+        public Response<List<FoodOverviewDto>> GetFoodByDiscountRate(int companyId, int amountOfFoodToBrought)
+        {
+            List<FoodOverviewDto> foodOverviewList = _foodRepository.GetFoodByDiscountRate(companyId, amountOfFoodToBrought);
+            if (foodOverviewList.IsNullOrEmpty())
+            {
+                return _utilityService.CreateResponseMessage(Error.NO_DISCOUNTED_FOOD, new List<FoodOverviewDto>(), false);
+            }
+            return _utilityService.CreateResponseMessage(Success.FOOD_LIST_BROUGHT, foodOverviewList, true);
+        }
 
 
     }

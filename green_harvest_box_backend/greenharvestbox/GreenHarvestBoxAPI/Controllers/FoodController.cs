@@ -7,6 +7,7 @@ using greenharvestbox.Logic.Services.UtilityServices;
 using greenharvestbox.Logic.Models.dto.Food.dto;
 using Microsoft.AspNetCore.Authorization;
 using greenharvestbox.Data.Resources;
+using FoodOverviewDto = greenharvestbox.Logic.Models.dto.Food.dto.FoodOverviewDto;
 
 namespace GreenHarvestBoxAPI.Controllers
 {
@@ -24,7 +25,7 @@ namespace GreenHarvestBoxAPI.Controllers
         }
         [HttpPost, Authorize(Roles = $"{Roles.CUSTOMER}")]
       
-        public ActionResult<List<greenharvestbox.Data.Models.dto.Food.dto.FoodOverviewDto>> GetRandomFood([FromBody]FoodRequestDto foodRequestDto)
+        public ActionResult<List<FoodOverviewDto>> GetRandomFood([FromBody]FoodRequestDto foodRequestDto)
         {
             try
             {
@@ -32,12 +33,20 @@ namespace GreenHarvestBoxAPI.Controllers
             }
             catch(Exception ex)
             {
-                return base.BadRequest(new Response<List<greenharvestbox.Data.Models.dto.Food.dto.FoodOverviewDto>>
-                {
-                    Message = _utilityService.ExceptionInformation(ex.Message, ex.StackTrace),
-                    Data = new List<greenharvestbox.Data.Models.dto.Food.dto.FoodOverviewDto>(),
-                    Progress = false
-                });
+                return BadRequest(_utilityService.CreateResponseMessage(_utilityService.ExceptionInformation(ex.Message, ex.StackTrace), new List<FoodOverviewDto>(), false));
+            }
+        }
+        [HttpPost, Authorize(Roles = $"{Roles.CUSTOMER}")]
+
+        public ActionResult<List<FoodOverviewDto>> GetFoodByDiscountRate([FromBody] FoodRequestDto foodRequestDto)
+        {
+            try
+            {
+                return Ok(_foodService.GetFoodByDiscountRate(foodRequestDto.CompanyId, foodRequestDto.AmountOfFoodToBrought));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(_utilityService.CreateResponseMessage(_utilityService.ExceptionInformation(ex.Message, ex.StackTrace), new List<FoodOverviewDto>(), false));
             }
         }
     }

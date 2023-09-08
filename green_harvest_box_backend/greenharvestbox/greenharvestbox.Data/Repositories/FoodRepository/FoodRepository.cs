@@ -37,5 +37,21 @@ namespace greenharvestbox.Data.Repositories.FoodRepository
                 return foodOverviews;
             }
         }
+
+        public List<FoodOverviewDto> GetFoodByDiscountRate(int companyId, int amountOfFoodToBrought)
+        {
+            var procedureName = "Food_GetFoodByDiscountRate";
+
+            // Dapper sorgusu ile verileri çekiyoruz
+
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("@CompanyId", companyId, DbType.Int64);
+            parameters.Add("@AmountOfFoodToBrought", amountOfFoodToBrought, DbType.Int32);
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                List<FoodOverviewDto> foodOverviews = connection.Query<FoodOverviewDto>(procedureName, parameters, commandType: CommandType.StoredProcedure).ToList();
+                return foodOverviews;
+            }
+        }
     }
 }

@@ -80,5 +80,61 @@ namespace greenharvestbox.Test
             Assert.Empty(response.Data);
             Assert.False(response.Progress);
         }
+
+        [Fact]
+        public void GetFoodByDiscountRate_ShouldReturnSuccessResponse_WhenParametersAreValid()
+        {
+            //ARRANGE
+            Logic.Models.dto.Food.dto.FoodRequestDto foodRequestDto = new Logic.Models.dto.Food.dto.FoodRequestDto()
+            {
+                CompanyId = 1,
+                AmountOfFoodToBrought = 1
+            };
+            List<FoodOverviewDto> foodOverviewDtoList = new List<FoodOverviewDto>();
+            FoodOverviewDto foodOverviewDto = new FoodOverviewDto()
+            {
+                Id = 1,
+                FoodName = "çilek",
+                CategoryName = "meyve",
+                Type = "yaz meyvesi",
+                Price = 10,
+                Quantity = 20,
+                Discount = 10,
+                Content = null
+            };
+            foodOverviewDtoList.Add(foodOverviewDto);
+            _foodRepositoryMock.Setup(x => x.GetFoodByDiscountRate(foodRequestDto.CompanyId, foodRequestDto.AmountOfFoodToBrought)).Returns(foodOverviewDtoList);
+            //ACT
+
+            Response<List<FoodOverviewDto>> response = _foodService.GetFoodByDiscountRate(foodRequestDto.CompanyId, foodRequestDto.AmountOfFoodToBrought);
+
+            Assert.Equal(Success.FOOD_LIST_BROUGHT, response.Message);
+            Assert.NotNull(response.Data);
+            Assert.True(response.Progress);
+            Assert.True(foodOverviewDto.Discount > 0 && foodOverviewDto.Discount < 100);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(2)]
+        public void GetFoodByDiscountRate_ShouldReturnErrorResponse_WhenFoodListEmptyOrFoodAmountZero(int foodAmount)
+        {
+            //ARRANGE
+            Logic.Models.dto.Food.dto.FoodRequestDto foodRequestDto = new Logic.Models.dto.Food.dto.FoodRequestDto()
+            {
+                CompanyId = 1,
+                AmountOfFoodToBrought = foodAmount
+            };
+            List<FoodOverviewDto> foodOverviewDtoList = new List<FoodOverviewDto>();
+
+            _foodRepositoryMock.Setup(x => x.GetFoodByDiscountRate(foodRequestDto.CompanyId, foodRequestDto.AmountOfFoodToBrought)).Returns(foodOverviewDtoList);
+            //ACT
+
+            Response<List<FoodOverviewDto>> response = _foodService.GetFoodByDiscountRate(foodRequestDto.CompanyId, foodRequestDto.AmountOfFoodToBrought);
+
+            Assert.Equal(Error.NO_DISCOUNTED_FOOD, response.Message);
+            Assert.Empty(response.Data);
+            Assert.False(response.Progress);
+        }
     }
 }

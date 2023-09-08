@@ -11,5 +11,6 @@ namespace greenharvestbox.Logic.Services.FoodServices
     public interface IFoodService
     {
         public Response<List<FoodOverviewDto>> GetRandomFood(int companyId, int amountOfFoodToBrought);
+        public Response<List<FoodOverviewDto>> GetFoodByDiscountRate(int companyId, int amountOfFoodToBrought);
     }
 }

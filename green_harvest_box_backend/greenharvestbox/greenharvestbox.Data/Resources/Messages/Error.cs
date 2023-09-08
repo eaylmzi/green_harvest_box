@@ -18,5 +18,6 @@ namespace greenharvestbox.Data.Resources.Messages
 
         //Food
         public const string FOOD_LIST_EMPTY = "Food list is empty";
+        public const string NO_DISCOUNTED_FOOD = "Discounted food not found";
     }
 }
