@@ -53,5 +53,42 @@ namespace greenharvestbox.Data.Repositories.FoodRepository
                 return foodOverviews;
             }
         }
+
+
+        /*
+        //Unused function. If the website is avaiable for more than one company, it is logical
+        //It returns the features of the product with the most comments.
+        public List<FoodOverviewDto> GetFoodByCommentCount(int companyId, int amountOfFoodToBrought)
+        {
+            var procedureName = "Food_GetFoodByCommentCount";
+
+            // Dapper sorgusu ile verileri çekiyoruz
+
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("@CompanyId", companyId, DbType.Int64);
+            parameters.Add("@AmountOfFoodToBrought", amountOfFoodToBrought, DbType.Int32);
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                List<FoodOverviewDto> foodOverviews = connection.Query<FoodOverviewDto>(procedureName, parameters, commandType: CommandType.StoredProcedure).ToList();
+                return foodOverviews;
+            }
+        }
+        */
+
+
+        public List<FoodOverviewDto> GetFoodByName(string name)
+        {
+            var procedureName = "Food_GetFoodByName";
+
+            // Dapper sorgusu ile verileri çekiyoruz
+
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("@Name", name, DbType.String);
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                List<FoodOverviewDto> foodOverviews = connection.Query<FoodOverviewDto>(procedureName, parameters, commandType: CommandType.StoredProcedure).ToList();
+                return foodOverviews;
+            }
+        }
     }
-}
+} 

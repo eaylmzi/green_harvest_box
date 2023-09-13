@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace greenharvestbox.Data.Models.dto.Food.dto
 {
     public class FoodOverviewDto
     {
+     
         public long Id { get; set; }
         public string FoodName { get; set; } = null!;
         public string CategoryName { get; set; } = null!;

@@ -17,13 +17,13 @@ namespace GreenHarvestBoxAPI.Controllers
     {
         private readonly IFoodService _foodService;
         private readonly IUtilityService _utilityService;
-
+        //[HttpPost, Authorize(Roles = $"{Roles.CUSTOMER}")]
         public FoodController(IFoodService foodService, IUtilityService utilityService)
         {
             _foodService = foodService;
             _utilityService = utilityService;
         }
-        [HttpPost, Authorize(Roles = $"{Roles.CUSTOMER}")]
+        [HttpPost]
       
         public ActionResult<List<FoodOverviewDto>> GetRandomFood([FromBody]FoodRequestDto foodRequestDto)
         {
@@ -36,7 +36,7 @@ namespace GreenHarvestBoxAPI.Controllers
                 return BadRequest(_utilityService.CreateResponseMessage(_utilityService.ExceptionInformation(ex.Message, ex.StackTrace), new List<FoodOverviewDto>(), false));
             }
         }
-        [HttpPost, Authorize(Roles = $"{Roles.CUSTOMER}")]
+        [HttpPost]
 
         public ActionResult<List<FoodOverviewDto>> GetFoodByDiscountRate([FromBody] FoodRequestDto foodRequestDto)
         {
@@ -49,5 +49,33 @@ namespace GreenHarvestBoxAPI.Controllers
                 return BadRequest(_utilityService.CreateResponseMessage(_utilityService.ExceptionInformation(ex.Message, ex.StackTrace), new List<FoodOverviewDto>(), false));
             }
         }
+        [HttpPost]
+        public ActionResult<List<FoodOverviewDto>> GetFoodByName([FromBody] FoodNameDto foodNameDto)
+        {
+            try
+            {
+                return Ok(_foodService.GetFoodByName(foodNameDto.Name));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(_utilityService.CreateResponseMessage(_utilityService.ExceptionInformation(ex.Message, ex.StackTrace), new List<FoodOverviewDto>(), false));
+            }
+        }
+
+        /*
+        [HttpPost, Authorize(Roles = $"{Roles.CUSTOMER}")]
+
+        public ActionResult<List<FoodOverviewDto>> GetFoodByCommentCount([FromBody] FoodRequestDto foodRequestDto)
+        {
+            try
+            {
+                return Ok(_foodService.GetFoodByCommentCount(foodRequestDto.CompanyId, foodRequestDto.AmountOfFoodToBrought));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(_utilityService.CreateResponseMessage(_utilityService.ExceptionInformation(ex.Message, ex.StackTrace), new List<FoodOverviewDto>(), false));
+            }
+        }
+        */
     }
 }
