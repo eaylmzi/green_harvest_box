@@ -56,6 +56,17 @@ namespace greenharvestbox.Logic.Services.FoodServices
             }
             return _utilityService.CreateResponseMessage(Success.FOOD_LIST_BROUGHT, foodOverviewList, true);
         }
+        // Summary:
+        //     Gets food according to given type. If given type is not found in list or less than 3 character return empty list.
+        public Response<List<FoodOverviewDto>> GetFoodByType(string name)
+        {
+            List<FoodOverviewDto> foodOverviewList = _foodRepository.GetFoodByType(name);
+            if (foodOverviewList.IsNullOrEmpty())
+            {
+                return _utilityService.CreateResponseMessage(Error.NO_FOOD_FOUND, new List<FoodOverviewDto>(), false);
+            }
+            return _utilityService.CreateResponseMessage(Success.FOOD_LIST_BROUGHT, foodOverviewList, true);
+        }
         /*
         //Unused function. If the website is avaiable for more than one company, it is logical
         //It returns the features of the food with the most comments.If there aren't enough reviews for the desired amount,

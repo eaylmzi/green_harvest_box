@@ -193,5 +193,61 @@ namespace greenharvestbox.Test
             Assert.Empty(response.Data);
             Assert.False(response.Progress);
         }
+        [Fact]
+        public void GetFoodByType_ShouldReturnSuccessResponse_WhenParametersAreValid()
+        {
+            //ARRANGE
+            string fruitName = "yaz";
+            List<FoodOverviewDto> foodOverviewDtoList = new List<FoodOverviewDto>();
+            FoodOverviewDto foodOverviewDto = new FoodOverviewDto()
+            {
+                Id = 1,
+                FoodName = "çilek",
+                CategoryName = "meyve",
+                Type = "yaz meyvesi",
+                Price = 10,
+                Quantity = 20,
+                Discount = 0,
+                Content = null
+            };
+            foodOverviewDtoList.Add(foodOverviewDto);
+            _foodRepositoryMock.Setup(x => x.GetFoodByType(fruitName)).Returns(foodOverviewDtoList);
+            //ACT
+
+            Response<List<FoodOverviewDto>> response = _foodService.GetFoodByType(fruitName);
+
+            Assert.Equal(Success.FOOD_LIST_BROUGHT, response.Message);
+            Assert.NotNull(response.Data);
+            Assert.True(response.Progress);
+        }
+        [Theory]
+        [InlineData("ya")]
+        [InlineData("kış")]
+        public void GetFoodByType_ShouldReturnErrorResponse_WhenListIsEmptyAndParameterIsNotValid(string fruitName)
+        {
+            //ARRANGE
+            List<FoodOverviewDto> foodOverviewDtoList = new List<FoodOverviewDto>();
+            FoodOverviewDto foodOverviewDto = new FoodOverviewDto()
+            {
+                Id = 1,
+                FoodName = "çilek",
+                CategoryName = "meyve",
+                Type = "yaz meyvesi",
+                Price = 10,
+                Quantity = 20,
+                Discount = 0,
+                Content = null
+            };
+            foodOverviewDtoList.Add(foodOverviewDto);
+            _foodRepositoryMock.Setup(x => x.GetFoodByType("yaz")).Returns(foodOverviewDtoList);
+
+            //ACT
+
+            Response<List<FoodOverviewDto>> response = _foodService.GetFoodByType(fruitName);
+
+            Assert.Equal(Error.NO_FOOD_FOUND, response.Message);
+            Assert.Empty(response.Data);
+            Assert.False(response.Progress);
+        }
     }
 }

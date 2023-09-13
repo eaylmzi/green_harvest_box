@@ -61,6 +61,18 @@ namespace GreenHarvestBoxAPI.Controllers
                 return BadRequest(_utilityService.CreateResponseMessage(_utilityService.ExceptionInformation(ex.Message, ex.StackTrace), new List<FoodOverviewDto>(), false));
             }
         }
+        [HttpPost]
+        public ActionResult<List<FoodOverviewDto>> GetFoodByType([FromBody] FoodNameDto foodNameDto)
+        {
+            try
+            {
+                return Ok(_foodService.GetFoodByType(foodNameDto.Name));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(_utilityService.CreateResponseMessage(_utilityService.ExceptionInformation(ex.Message, ex.StackTrace), new List<FoodOverviewDto>(), false));
+            }
+        }
 
         /*
         [HttpPost, Authorize(Roles = $"{Roles.CUSTOMER}")]

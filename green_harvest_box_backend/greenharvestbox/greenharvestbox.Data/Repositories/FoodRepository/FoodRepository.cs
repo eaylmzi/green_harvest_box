@@ -26,7 +26,6 @@ namespace greenharvestbox.Data.Repositories.FoodRepository
         {
             var procedureName = "Food_GetRandomFood";
 
-            // Dapper sorgusu ile verileri çekiyoruz
 
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("@CompanyId", companyId, DbType.Int64);
@@ -42,7 +41,6 @@ namespace greenharvestbox.Data.Repositories.FoodRepository
         {
             var procedureName = "Food_GetFoodByDiscountRate";
 
-            // Dapper sorgusu ile verileri çekiyoruz
 
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("@CompanyId", companyId, DbType.Int64);
@@ -80,7 +78,19 @@ namespace greenharvestbox.Data.Repositories.FoodRepository
         {
             var procedureName = "Food_GetFoodByName";
 
-            // Dapper sorgusu ile verileri çekiyoruz
+
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("@Name", name, DbType.String);
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                List<FoodOverviewDto> foodOverviews = connection.Query<FoodOverviewDto>(procedureName, parameters, commandType: CommandType.StoredProcedure).ToList();
+                return foodOverviews;
+            }
+        }
+        public List<FoodOverviewDto> GetFoodByType(string name)
+        {
+            var procedureName = "Food_GetFoodByType";
+
 
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("@Name", name, DbType.String);
